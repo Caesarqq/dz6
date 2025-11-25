@@ -142,3 +142,4 @@ cat emails.txt | SelectUsers | SelectMessages | CheckSpam | CombineResults
 * time.Sleep использовать нельзя
 
 Эталонное решение занимает 130 строк
+<!--  -->
