@@ -35,6 +35,8 @@ func SelectUsers(in, out chan interface{}) {
 	seenUsers := make(map[uint64]bool)
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
+	maxWorkers := 100
+	semaphore := make(chan struct{}, maxWorkers)
 
 	for item := range in {
 		email, ok := item.(string)
@@ -42,9 +44,11 @@ func SelectUsers(in, out chan interface{}) {
 			continue
 		}
 		wg.Add(1)
+		semaphore <- struct{}{}
 
 		go func(emailAddr string) {
 			defer wg.Done()
+			defer func() { <-semaphore }()
 			user := GetUser(emailAddr)
 			mutex.Lock()
 			alreadySeen := seenUsers[user.ID]
